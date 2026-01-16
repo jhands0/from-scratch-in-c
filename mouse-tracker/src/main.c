@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <linux/input.h>
 
 void print_help(char* exec_alias)
 {
@@ -27,7 +29,15 @@ int main(int argc, char* argv[])
     }
 
     char *mousepath = argv[1];
-    printf("Getting data from device %s ...\n", mousepath);
+    printf("Intercepting device %s ...\n", mousepath);
     int fd = open(mousepath, 0, O_RDONLY);
     printf("File descriptor: %d\n", fd);
+
+    struct input_event ie;
+    read(fd, &ie, sizeof(ie));
+    printf("\nEvent recieved.\n");
+    printf("Time = %lds %ldus\n", ie.time.tv_sec, ie.time.tv_usec);
+    printf("Type = %hu\n", ie.type);
+    printf("Code = %hu\n", ie.code);
+    printf("Value = %d\n", ie.value);
 }
