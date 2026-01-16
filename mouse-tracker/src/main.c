@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 void print_help(char* exec_alias)
 {
@@ -25,4 +26,8 @@ int main(int argc, char* argv[])
         exit(0);
     }
 
+    char *mousepath = argv[1];
+    printf("Getting data from device %s ...\n", mousepath);
+    int fd = open(mousepath, 0, O_RDONLY);
+    printf("File descriptor: %d\n", fd);
 }
