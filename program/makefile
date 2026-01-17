@@ -4,7 +4,7 @@ LDFLAGS = -lm
 SRCDIR = src
 SOURCES = $(wildcard $(SRCDIR)/*.c)
 OBJECTS = $(SOURCES: .c=.o)
-TARGET = temp
+TARGET = out
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $(TARGET)
