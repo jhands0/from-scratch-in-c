@@ -99,17 +99,23 @@ int main(int argc, char* argv[])
     printf("File descriptor: %d\n", fd);
 
     struct input_event ie;
-    read(fd, &ie, sizeof(ie));
-    printf("\nEvent recieved.\n");
-    printf("Time = %lds %ldus\n", ie.time.tv_sec, ie.time.tv_usec);
 
-    char* type;
-    type = get_event_type(ie.type);
-    printf("Event Type = %s\n", type);
+    while (1)
+    {
+        read(fd, &ie, sizeof(ie));
+        printf("\nEvent recieved.\n");
+        printf("Time = %lds %ldus\n", ie.time.tv_sec, ie.time.tv_usec);
 
-    char* code;
-    code = get_code(ie.code);
-    printf("Code = %s\n", code);
+        char* type;
+        type = get_event_type(ie.type);
+        printf("Event Type = %s\n", type);
 
-    printf("Value = %d\n", ie.value);
+        char* code;
+        code = get_code(ie.code);
+        printf("Code = %s\n", code);
+
+        int value;
+        value = ie.value;
+        printf("Value = %d\n", value);
+    }
 }
