@@ -42,6 +42,34 @@ char* get_event_type(unsigned short type)
     }
 }
 
+char* get_code(unsigned short code)
+{
+    switch (code) {
+        case 0:
+            return "REL_X";
+        case 1:
+            return "REL_Y";
+        case 2:
+            return "REL_Z";
+        case 3:
+            return "REL_RX";
+        case 4:
+            return "REL_RY";
+        case 5:
+            return "REL_RZ";
+        case 6:
+            return "REL_HWHEEL";
+        case 7:
+            return "REL_DIAL";
+        case 8:
+            return "REL_WHEEL";
+        case 9:
+            return "REL_MISC";
+        default:
+            return "n/a";
+    }
+}
+
 void print_help(char* exec_alias)
 {
     printf("USAGE:\n");
@@ -79,6 +107,9 @@ int main(int argc, char* argv[])
     type = get_event_type(ie.type);
     printf("Event Type = %s\n", type);
 
-    printf("Code = %hu\n", ie.code);
+    char* code;
+    code = get_code(ie.code);
+    printf("Code = %s\n", code);
+
     printf("Value = %d\n", ie.value);
 }
