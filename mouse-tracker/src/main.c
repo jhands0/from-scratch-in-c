@@ -114,8 +114,6 @@ int main(int argc, char* argv[])
         code = get_code(ie.code);
         printf("Code = %s\n", code);
 
-        int value;
-        value = ie.value;
-        printf("Value = %d\n", value);
+        printf("Value = %d\n", ie.value);
     }
 }
