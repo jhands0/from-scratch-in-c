@@ -6,6 +6,6 @@ int main()
     int c;
     while((c = getchar()) != EOF)
     {
-        printf("%x", c);
+        printf("%02x", c);
     }
 }
