@@ -1,6 +1,6 @@
-# (name of program)
+# hexdump
 
-Description of program
+An xxd like program that creates a hexdump of any file
 
 ## Getting Started
 
