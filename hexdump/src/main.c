@@ -32,7 +32,7 @@ int main()
     char *buffer = (char *) calloc(0x10, sizeof(char));
     while((c = getchar()) != EOF)
     {
-        if (addr_i % 16 == 0)
+        if (addr_i % 0x10 == 0)
         {
             if (addr_i != 0x0)
             {
