@@ -19,9 +19,10 @@ void print_clear(char *buffer, int len)
 void add_space(int index)
 {
     int i = index;
-    while (i % 0x10 == 1)
+    while (i % 0x10 != 0)
     {
         printf("   ");
+        i += 1;
     }
 }
 
@@ -30,7 +31,7 @@ int main()
     int c;
     int addr_i = 0x0;
     char *buffer = (char *) calloc(0x10, sizeof(char));
-    while((c = getchar()) != EOF)
+    while ((c = getchar()) != EOF)
     {
         if (addr_i % 0x10 == 0)
         {
@@ -39,8 +40,8 @@ int main()
                 print_clear(buffer, 0x10);
                 printf("\n");
             }
-            printf("%08x ", addr_i);
 
+            printf("%08x ", addr_i);
         }
 
         buffer[addr_i % 0x10] = c;
@@ -48,8 +49,11 @@ int main()
         addr_i += 1;
     }
 
+    int char_offset = addr_i % 0x10;
     add_space(addr_i);
-    print_clear(buffer, addr_i);
+    print_clear(buffer, char_offset);
     printf("\n");
     printf("%08x\n", addr_i);
+
+    free(buffer);
 }
