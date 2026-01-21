@@ -1,6 +1,6 @@
 # hexdump
 
-An xxd like program that creates a hexdump of any file
+An xxd like program that creates a hexdump of any text or file
 
 ## Getting Started
 
