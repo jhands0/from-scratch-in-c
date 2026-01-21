@@ -9,6 +9,8 @@
 #define WIDTH 900
 #define HEIGHT 600
 
+#define TARGET_FPS 60
+
 int main()
 {
     bool done = false;
@@ -23,6 +25,7 @@ int main()
         0
     );
 
+    float delay_ms = (1.0 / TARGET_FPS) * 1000;
     while (!done)
     {
         SDL_Event event;
@@ -36,7 +39,7 @@ int main()
 
         // On every frame ...
 
-        SDL_Delay(100);
+        SDL_Delay(delay_ms);
     }
 
     SDL_DestroyWindow(window);
