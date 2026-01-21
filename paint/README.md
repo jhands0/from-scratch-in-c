@@ -1,6 +1,6 @@
-# (name of program)
+# Paint
 
-Description of program
+A simple paint program written in C.
 
 ## Getting Started
 
@@ -17,7 +17,7 @@ Description of program
 1. Clone the repo
 
 ```sh
-git clone -b <branch> https://github.com/jhands0/from-scratch-in-c.git
+git clone -b paint https://github.com/jhands0/from-scratch-in-c.git
 ```
 
 2. Build the program
