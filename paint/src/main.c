@@ -1,4 +1,6 @@
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
@@ -25,19 +27,35 @@ int main()
         0
     );
 
+    SDL_Surface *surface = SDL_GetWindowSurface(window);
+
     float delay_ms = (1.0 / TARGET_FPS) * 1000;
     while (!done)
     {
+        bool draw = false;
+        SDL_Rect rect;
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT)
+            switch (event.type)
             {
-                done = true;
+                case SDL_QUIT:
+                    done = true;
+                    break;
+
+                case SDL_BUTTON_LEFT:
+                    draw = draw ? false : true;
+                    break;
+
+                case SDL_MOUSEMOTION:
+                    rect = (SDL_Rect) {event.motion.x, event.motion.y, 10, 10};
+                    SDL_FillRect(surface, &rect, 0x00FFFF);
             }
         }
 
         // On every frame ...
+
+        SDL_UpdateWindowSurface(window);
 
         SDL_Delay(delay_ms);
     }
