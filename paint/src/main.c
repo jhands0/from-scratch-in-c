@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
-#include <wchar.h>
 
 #define WIDTH 900
 #define HEIGHT 600
@@ -25,7 +24,8 @@
 #define MAGENTA 0xFF00FF
 #define YELLOW  0xFFFF00
 
-#define RADIUS 10
+#define RADIUS        10
+#define ERASER_RADIUS 15
 
 void draw_circle(SDL_Surface *surface, int x, int y, int radius, int color)
 {
@@ -69,6 +69,7 @@ int main()
         // On every frame ...
 
         bool draw;
+        bool eraser;
         SDL_Event event;
         int color;
         while (SDL_PollEvent(&event))
@@ -85,10 +86,12 @@ int main()
                     switch (event.button.button)
                     {
                         case SDL_BUTTON_LEFT:
+                            eraser = false;
                             color = colors[color_i];
                             break;
 
                         case SDL_BUTTON_RIGHT:
+                            eraser = true;
                             color = BLACK;
                             break;
                     }
@@ -104,7 +107,8 @@ int main()
 
                     if (draw)
                     {
-                        draw_circle(surface, event.motion.x, event.motion.y, RADIUS, color);
+                        int current_radius = eraser ? ERASER_RADIUS : RADIUS;
+                        draw_circle(surface, event.motion.x, event.motion.y, current_radius, color);
                     }
                     break;
 
