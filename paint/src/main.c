@@ -16,6 +16,7 @@
 
 #define TARGET_FPS 60
 
+#define BLACK   0x000000
 #define WHITE   0xFFFFFF
 #define RED     0xFF0000
 #define GREEN   0x00FF00
@@ -80,6 +81,18 @@ int main()
 
                 case SDL_MOUSEBUTTONDOWN:
                     draw = true;
+
+                    switch (event.button.button)
+                    {
+                        case SDL_BUTTON_LEFT:
+                            color = colors[color_i];
+                            break;
+
+                        case SDL_BUTTON_RIGHT:
+                            color = BLACK;
+                            break;
+                    }
+
                     break;
 
                 case SDL_MOUSEBUTTONUP:
@@ -87,11 +100,7 @@ int main()
                     break;
 
                 case SDL_MOUSEMOTION:
-                    if (color == NULL || color_i == NULL)
-                    {
-                        color_i = 0;
-                        color = colors[color_i];
-                    }
+                    color_i = 0;
 
                     if (draw)
                     {
