@@ -4,6 +4,7 @@
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -22,6 +23,26 @@
 #define CYAN    0x00FFFF
 #define MAGENTA 0xFF00FF
 #define YELLOW  0xFFFF00
+
+#define RADIUS 10
+
+void draw_circle(SDL_Surface *surface, int x, int y, int radius, int color)
+{
+    SDL_Rect pixel = (SDL_Rect) {0, 0, 1, 1};
+    for (int i = x - radius; i <= x + radius; i++)
+    {
+        for (int j = y - radius; j <= y + radius; j++)
+        {
+            int distance_from_centre = sqrt(pow(i - x, 2) + pow(j - y, 2));
+            if (distance_from_centre < radius)
+            {
+                pixel.x = i;
+                pixel.y = j;
+                SDL_FillRect(surface, &pixel, color);
+            }
+        }
+    }
+}
 
 int main()
 {
@@ -47,7 +68,6 @@ int main()
         // On every frame ...
 
         bool draw;
-        SDL_Rect rect;
         SDL_Event event;
         int color;
         while (SDL_PollEvent(&event))
@@ -75,8 +95,7 @@ int main()
 
                     if (draw)
                     {
-                        rect = (SDL_Rect) {event.motion.x, event.motion.y, 10, 10};
-                        SDL_FillRect(surface, &rect, color);
+                        draw_circle(surface, event.motion.x, event.motion.y, RADIUS, color);
                     }
                     break;
 
