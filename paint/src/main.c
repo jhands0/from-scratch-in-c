@@ -32,7 +32,9 @@ int main()
     float delay_ms = (1.0 / TARGET_FPS) * 1000;
     while (!done)
     {
-        bool draw = false;
+        // On every frame ...
+
+        bool draw;
         SDL_Rect rect;
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -43,17 +45,23 @@ int main()
                     done = true;
                     break;
 
-                case SDL_BUTTON_LEFT:
-                    draw = draw ? false : true;
+                case SDL_MOUSEBUTTONDOWN:
+                    draw = true;
+                    break;
+
+                case SDL_MOUSEBUTTONUP:
+                    draw = false;
                     break;
 
                 case SDL_MOUSEMOTION:
-                    rect = (SDL_Rect) {event.motion.x, event.motion.y, 10, 10};
-                    SDL_FillRect(surface, &rect, 0x00FFFF);
+                    if (draw)
+                    {
+                        rect = (SDL_Rect) {event.motion.x, event.motion.y, 10, 10};
+                        SDL_FillRect(surface, &rect, 0x00FFFF);
+                    }
+                    break;
             }
         }
-
-        // On every frame ...
 
         SDL_UpdateWindowSurface(window);
 
