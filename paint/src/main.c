@@ -41,7 +41,7 @@ int main()
 
     float delay_ms = (1.0 / TARGET_FPS) * 1000;
     int colors[7] = {WHITE, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW};
-    int color_i = 0;
+    int color_i;
     while (!done)
     {
         // On every frame ...
@@ -67,8 +67,9 @@ int main()
                     break;
 
                 case SDL_MOUSEMOTION:
-                    if (color == NULL)
+                    if (color == NULL || color_i == NULL)
                     {
+                        color_i = 0;
                         color = colors[color_i];
                     }
 
