@@ -53,4 +53,6 @@ make release
 
 ## Usage
 
-### Examples
+```sh
+./out
+```
