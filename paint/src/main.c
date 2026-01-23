@@ -1,5 +1,6 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
@@ -26,6 +27,13 @@
 
 #define RADIUS        10
 #define ERASER_RADIUS 15
+
+typedef struct {
+    bool draw;
+    bool eraser;
+    int  color;
+    int  color_i;
+} State;
 
 void draw_circle(SDL_Surface *surface, int x, int y, int radius, int color)
 {
@@ -62,16 +70,15 @@ int main()
     SDL_Surface *surface = SDL_GetWindowSurface(window);
 
     float delay_ms = (1.0 / TARGET_FPS) * 1000;
-    int colors[7] = {WHITE, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW};
-    int color_i;
+    const int colors[7] = {WHITE, RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW};
+
+    static State app_state = (State) {false, false, WHITE, 0};
+
     while (!done)
     {
         // On every frame ...
 
-        bool draw;
-        bool eraser;
         SDL_Event event;
-        int color;
         while (SDL_PollEvent(&event))
         {
             switch (event.type)
@@ -81,43 +88,46 @@ int main()
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
-                    draw = true;
+                    app_state.draw = true;
 
                     switch (event.button.button)
                     {
                         case SDL_BUTTON_LEFT:
-                            eraser = false;
-                            color = colors[color_i];
+                            app_state.eraser = false;
+                            app_state.color = colors[app_state.color_i];
+                            break;
+
+                        case SDL_BUTTON_MIDDLE:
+                            app_state.color_i = (app_state.color_i + 1) % 7;
                             break;
 
                         case SDL_BUTTON_RIGHT:
-                            eraser = true;
-                            color = BLACK;
+                            app_state.eraser = true;
+                            app_state.color = BLACK;
                             break;
                     }
 
                     break;
 
                 case SDL_MOUSEBUTTONUP:
-                    draw = false;
+                    app_state.draw = false;
                     break;
 
                 case SDL_MOUSEMOTION:
-                    color_i = 0;
 
-                    if (draw)
+                    if (app_state.draw)
                     {
-                        int current_radius = eraser ? ERASER_RADIUS : RADIUS;
-                        draw_circle(surface, event.motion.x, event.motion.y, current_radius, color);
+                        int current_radius = app_state.eraser ? ERASER_RADIUS : RADIUS;
+                        draw_circle(surface, event.motion.x, event.motion.y, current_radius, app_state.color);
                     }
                     break;
 
                 case SDL_MOUSEWHEEL_NORMAL:
-                    color_i = (color_i + 1) % 7;
+                    app_state.color_i = (app_state.color_i + 1) % 7;
                     break;
 
                 case SDL_MOUSEWHEEL_FLIPPED:
-                    color_i = (color_i - 1) % 7;
+                    app_state.color_i = (app_state.color_i - 1) % 7;
                     break;
             }
         }
