@@ -8,7 +8,7 @@ OBJECTS = $(SOURCES: .c=.o)
 TARGET = out
 
 $(TARGET): $(OBJECTS)
-$(CC) $(OBJECTS) $(LDFLAGS) -o $(TARGET) $(SDL2)
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $(TARGET) $(SDL2)
 
 release: CFLAGS += -O3 -flto -march=native
 release: LDFLAGS += -flto
