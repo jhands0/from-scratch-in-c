@@ -16,15 +16,22 @@
 
 #define WHITE 0xFFFFFF
 
-void draw_circle(SDL_Surface *surface, int x, int y, int radius, int color)
+struct Circle
+{
+    double x;
+    double y;
+    double radius;
+};
+
+void draw_circle(SDL_Surface *surface, struct Circle circle, int color)
 {
     SDL_Rect pixel = (SDL_Rect) {0, 0, 1, 1};
-    for (int i = x - radius; i <= x + radius; i++)
+    for (double i = circle.x - circle.radius; i <= circle.x + circle.radius; i++)
     {
-        for (int j = y - radius; j <= y + radius; j++)
+        for (double j = circle.y - circle.radius; j <= circle.y + circle.radius; j++)
         {
-            int distance_from_centre = sqrt(pow(i - x, 2) + pow(j - y, 2));
-            if (distance_from_centre < radius)
+            double distance_from_centre = sqrt(pow(i - circle.x, 2) + pow(j - circle.y, 2));
+            if (distance_from_centre < circle.radius)
             {
                 pixel.x = i;
                 pixel.y = j;
@@ -41,7 +48,8 @@ int main()
 
     SDL_Surface *surface = SDL_GetWindowSurface(window);
 
-    draw_circle(surface, 200, 200, 50, WHITE);
+    struct Circle source = {200.0, 200.0, 50.0};
+    draw_circle(surface, source, WHITE);
 
     float delay_ms = (1.0 / TARGET_FPS) * 1000;
     bool done = false;
