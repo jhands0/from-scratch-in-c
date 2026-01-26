@@ -1,6 +1,6 @@
-# (name of program)
+# Ray-tracing
 
-Description of program
+A small c program to demonstrate ray tracing.
 
 ## Getting Started
 
@@ -17,7 +17,7 @@ Description of program
 1. Clone the repo
 
 ```sh
-git clone -b <branch> https://github.com/jhands0/from-scratch-in-c.git
+git clone -b ray-tracing https://github.com/jhands0/from-scratch-in-c.git
 ```
 
 2. Build the program
