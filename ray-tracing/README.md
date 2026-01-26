@@ -6,11 +6,36 @@ A small c program to demonstrate ray tracing.
 
 ### Prerequisites
 
+Install SDL2 on your local machine
+
 #### Debian/Ubuntu
+
+```sh
+sudo apt install libsdl2-dev
+```
 
 #### Fedora
 
+```sh
+sudo dnf install SDL2
+```
+
+#### Gentoo
+
+```sh
+sudo emerge libsdl2
+```
+
 #### From Source
+
+```sh
+git clone https://github.com/libsdl-org/SDL.git -D SDL2
+cd SDL
+mkdir build
+../configure
+make
+sudo make install
+```
 
 ### Installation
 
