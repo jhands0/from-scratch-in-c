@@ -1,5 +1,6 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
@@ -16,6 +17,9 @@
 
 #define TARGET_FPS 60
 
+#define NUM_RAYS 100
+#define RAY_LENGTH 200.0
+
 #define BLACK 0x000000
 #define GRAY  0x4B4C4C
 #define WHITE 0xFFFFFF
@@ -25,6 +29,13 @@ struct Circle
     double x;
     double y;
     double radius;
+};
+
+struct Ray
+{
+    double x_1, y_1;
+    double length;
+    double x_2, y_2;
 };
 
 void draw_circle(SDL_Surface *surface, struct Circle circle, int color)
@@ -45,6 +56,24 @@ void draw_circle(SDL_Surface *surface, struct Circle circle, int color)
     }
 }
 
+void generate_rays(struct Circle source, struct Ray rays[NUM_RAYS])
+{
+    double x_1 = source.x;
+    double y_1 = source.y;
+
+    double angle_step = 360.0 / NUM_RAYS;
+    struct Ray ray = {x_1, y_1, RAY_LENGTH, 0, 0};
+    int count = 0;
+    for (double angle = 0.0; angle < 360.0; angle += angle_step)
+    {
+        ray.x_2 = x_1 + (RAY_LENGTH * cos(angle));
+        ray.y_2 = y_1 + (RAY_LENGTH * sin(angle));
+
+        rays[count] = ray;
+        count += 1;
+    }
+}
+
 int main()
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -55,6 +84,7 @@ int main()
 
     double radius = 50.0;
     struct Circle circle = {0.0, 0.0, radius};
+    struct Ray rays[NUM_RAYS];
 
     float delay_ms = (1.0 / TARGET_FPS) * 1000;
     bool done = false;
@@ -77,6 +107,8 @@ int main()
                     if (event.button.button == SDL_BUTTON_LEFT)
                     {
                         draw_circle(surface, circle, WHITE);
+                        generate_rays(circle, rays);
+                        //draw_rays(surface, rays);
                     }
 
                     //Create a solid object when right mouse button is pressed
