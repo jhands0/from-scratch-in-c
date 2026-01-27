@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 
 #define WIDTH 900
@@ -16,6 +17,7 @@
 #define TARGET_FPS 60
 
 #define BLACK 0x000000
+#define GRAY  0x4B4C4C
 #define WHITE 0xFFFFFF
 
 struct Circle
@@ -76,7 +78,15 @@ int main()
                     {
                         draw_circle(surface, circle, WHITE);
                     }
+
+                    //Create a solid object when right mouse button is pressed
+                    if (event.button.button == SDL_BUTTON_RIGHT)
+                    {
+                        draw_circle(surface, circle, GRAY);
+                    }
                     break;
+
+
             }
         }
 
