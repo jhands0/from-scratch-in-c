@@ -18,7 +18,7 @@
 #define TARGET_FPS 60
 
 #define NUM_RAYS 100
-#define RAY_LENGTH 200.0
+#define RAY_LENGTH 1000.0
 
 #define BLACK 0x000000
 #define GRAY  0x4B4C4C
@@ -34,7 +34,7 @@ struct Circle
 struct Ray
 {
     double x_1, y_1;
-    double length;
+    double angle;
     double x_2, y_2;
 };
 
@@ -62,10 +62,11 @@ void generate_rays(struct Circle source, struct Ray rays[NUM_RAYS])
     double y_1 = source.y;
 
     double angle_step = 360.0 / NUM_RAYS;
-    struct Ray ray = {x_1, y_1, RAY_LENGTH, 0, 0};
+    struct Ray ray = {x_1, y_1, 0.0, 0, 0};
     int count = 0;
     for (double angle = 0.0; angle < 360.0; angle += angle_step)
     {
+        ray.angle = angle;
         ray.x_2 = x_1 + (RAY_LENGTH * cos(angle));
         ray.y_2 = y_1 + (RAY_LENGTH * sin(angle));
 
@@ -74,11 +75,20 @@ void generate_rays(struct Circle source, struct Ray rays[NUM_RAYS])
     }
 }
 
-void draw_rays(SDL_Surface *surface, struct Ray rays[NUM_RAYS])
+void draw_rays(SDL_Surface *surface, struct Ray rays[NUM_RAYS], double radius)
 {
     SDL_Rect pixel = (SDL_Rect) {0, 0, 1, 1};
+    int radius_int = (int) radius;
     for (int i = 0; i < NUM_RAYS; i++)
     {
+        for (int len = radius_int; len < RAY_LENGTH; len++)
+        {
+            pixel.x = (int) rays[i].x_1 + (len * cos(rays[i].angle));
+            pixel.y = (int) rays[i].y_1 + (len * sin(rays[i].angle));
+
+            SDL_FillRect(surface, &pixel, WHITE);
+        }
+
         pixel.x = (int) rays[i].x_2;
         pixel.y = (int) rays[i].y_2;
 
@@ -120,7 +130,7 @@ int main()
                     {
                         draw_circle(surface, circle, WHITE);
                         generate_rays(circle, rays);
-                        draw_rays(surface, rays);
+                        draw_rays(surface, rays, circle.radius);
                     }
 
                     //Create a solid object when right mouse button is pressed
