@@ -74,6 +74,18 @@ void generate_rays(struct Circle source, struct Ray rays[NUM_RAYS])
     }
 }
 
+void draw_rays(SDL_Surface *surface, struct Ray rays[NUM_RAYS])
+{
+    SDL_Rect pixel = (SDL_Rect) {0, 0, 1, 1};
+    for (int i = 0; i < NUM_RAYS; i++)
+    {
+        pixel.x = (int) rays[i].x_2;
+        pixel.y = (int) rays[i].y_2;
+
+        SDL_FillRect(surface, &pixel, WHITE);
+    }
+}
+
 int main()
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -108,7 +120,7 @@ int main()
                     {
                         draw_circle(surface, circle, WHITE);
                         generate_rays(circle, rays);
-                        //draw_rays(surface, rays);
+                        draw_rays(surface, rays);
                     }
 
                     //Create a solid object when right mouse button is pressed
