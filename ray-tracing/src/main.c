@@ -86,7 +86,14 @@ int main()
                     }
                     break;
 
+                case SDL_MOUSEWHEEL_NORMAL:
+                    // Fix later
+                    radius = (double) abs((int) radius + 10);
+                    break;
 
+                case SDL_MOUSEWHEEL_FLIPPED:
+                    radius = (double) abs((int) radius - 10);
+                    break;
             }
         }
 
