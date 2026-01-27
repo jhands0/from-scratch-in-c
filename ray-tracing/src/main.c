@@ -1,4 +1,5 @@
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
@@ -14,6 +15,7 @@
 
 #define TARGET_FPS 60
 
+#define BLACK 0x000000
 #define WHITE 0xFFFFFF
 
 struct Circle
@@ -48,8 +50,9 @@ int main()
 
     SDL_Surface *surface = SDL_GetWindowSurface(window);
 
-    struct Circle source = {200.0, 200.0, 50.0};
-    draw_circle(surface, source, WHITE);
+
+    double radius = 50.0;
+    struct Circle circle = {0.0, 0.0, radius};
 
     float delay_ms = (1.0 / TARGET_FPS) * 1000;
     bool done = false;
@@ -58,9 +61,22 @@ int main()
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT)
+            switch (event.type)
             {
-                done = true;
+                case SDL_QUIT:
+                    done = true;
+                    break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    circle.x = (double) event.motion.x;
+                    circle.y = (double) event.motion.y;
+
+                    //Create a light source when left mouse button is pressed
+                    if (event.button.button == SDL_BUTTON_LEFT)
+                    {
+                        draw_circle(surface, circle, WHITE);
+                    }
+                    break;
             }
         }
 
