@@ -1,6 +1,7 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
@@ -81,12 +82,22 @@ void draw_rays(SDL_Surface *surface, struct Ray rays[NUM_RAYS], double radius)
     int radius_int = (int) radius;
     for (int i = 0; i < NUM_RAYS; i++)
     {
+        Uint32 *pix = (Uint32*) surface->pixels;
+
         for (int len = radius_int; len < RAY_LENGTH; len++)
         {
             pixel.x = (int) rays[i].x_1 + (len * cos(rays[i].angle));
             pixel.y = (int) rays[i].y_1 + (len * sin(rays[i].angle));
 
-            SDL_FillRect(surface, &pixel, WHITE);
+            if (pix[pixel.x + (pixel.y * surface->w)] == GRAY)
+            {
+                len = RAY_LENGTH;
+            }
+            else
+            {
+                SDL_FillRect(surface, &pixel, WHITE);
+            }
+
         }
 
         pixel.x = (int) rays[i].x_2;
