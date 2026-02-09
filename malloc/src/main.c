@@ -24,10 +24,30 @@ typedef struct
     heap_chunk chunks[CHUNKS_CAPACITY];
 } heap_chunk_list;
 
+int heap_chunk_list_compare(const void *a, const void *b)
+{
+    const heap_chunk *a_chunk = a;
+    const heap_chunk *b_chunk = b;
+    return a_chunk->start - b_chunk->start;
+}
 
 int heap_chunk_list_find(const heap_chunk_list *list, void *ptr)
 {
-    return -1;
+    heap_chunk key = {
+        .start = ptr,
+    };
+
+    // binary search on chunk list
+    heap_chunk *result = bsearch(&key, list->chunks, list->count, sizeof(list->chunks[0]), heap_chunk_list_compare);
+    if (result != 0)
+    {
+        assert(list->chunks <= result);
+        return (result - list->chunks) / sizeof(list->chunks[0]);
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 // Insert heap chunk at end of sorted list, use reverse bubble sort to make new list sorted, time complexity O(n)
