@@ -30,9 +30,21 @@ int heap_chunk_list_find(const heap_chunk_list *list, void *ptr)
     return -1;
 }
 
+// Insert heap chunk at end of sorted list, use reverse bubble sort to make new list sorted, time complexity O(n)
 void heap_chunk_list_insert(heap_chunk_list *list, void *ptr, size_t size)
 {
+    assert(list->count < CHUNKS_CAPACITY);
+    list->chunks[list->count].start = ptr;
+    list->chunks[list->count].size = size;
 
+    for (size_t i = list->count; i > 0 && list->chunks[i].start < list->chunks[i-1].start; i--)
+    {
+        heap_chunk temp = list->chunks[i];
+        list->chunks[i] = list->chunks[i-1];
+        list->chunks[i-1] = temp;
+    }
+
+    list->count += 1;
 }
 
 void heap_chunk_list_remove(heap_chunk_list *list, size_t index)
