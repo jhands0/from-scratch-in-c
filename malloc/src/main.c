@@ -8,6 +8,8 @@
 // 1 kiB
 #define CHUNKS_CAPACITY 1024
 
+
+
 // Fixed sized chunks
 typedef struct
 {
@@ -20,6 +22,7 @@ typedef struct
     size_t count;
     heap_chunk chunks[CHUNKS_CAPACITY];
 } heap_chunk_list;
+
 
 int heap_chunk_list_find(const heap_chunk_list *list, void *ptr)
 {
@@ -35,6 +38,17 @@ void heap_chunk_list_remove(heap_chunk_list *list, size_t index)
 {
 
 }
+
+void print_heap_chunk_list(const heap_chunk_list *list)
+{
+    printf("%zu Chunk(s):\n", list->count);
+    for (size_t i = 0; i < list->count; i++)
+    {
+        printf("#%zu: start: %p, size: %zu\n", i, list->chunks[i].start, list->chunks[i].size);
+    }
+}
+
+
 
 
 // Primary heap array
@@ -53,24 +67,9 @@ void *heap_alloc(size_t size)
     void *result = heap + heap_size;
     heap_size += size;
 
-    const heap_chunk chunk = {
-        .start = result,
-        .size = size,
-    };
-
-    assert(allocated_chunks.count < CHUNKS_CAPACITY);
-    allocated_chunks.chunks[allocated_chunks.count++] = chunk;
+    heap_chunk_list_insert(&allocated_chunks, result, size);
 
     return result;
-}
-
-void print_allocated_chunks(void)
-{
-    printf("%zu Allocated chunk(s):\n", allocated_chunks.count);
-    for (size_t i = 0; i < allocated_chunks.count; i++)
-    {
-        printf("#%zu: start: %p, size: %zu\n", i, allocated_chunks.chunks[i].start, allocated_chunks.chunks[i].size);
-    }
 }
 
 // Iterates through the allocated chunks array, time complexity O(n)
@@ -102,8 +101,6 @@ int main()
     {
         heap_alloc(i+1);
     }
-
-    print_allocated_chunks();
 
     return 0;
 }
