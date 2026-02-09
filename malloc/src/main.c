@@ -6,8 +6,7 @@
 #define CAPACITY 640000
 
 // 1 kiB
-#define ALLOCATED_CHUNKS_CAPACITY 1024
-#define FREED_CHUNKS_CAPACITY 1024
+#define CHUNKS_CAPACITY 1024
 
 // Fixed sized chunks
 typedef struct
@@ -16,16 +15,35 @@ typedef struct
     size_t size;
 } heap_chunk;
 
+typedef struct
+{
+    size_t count;
+    heap_chunk chunks[CHUNKS_CAPACITY];
+} heap_chunk_list;
+
+int heap_chunk_list_find(const heap_chunk_list *list, void *ptr)
+{
+    return -1;
+}
+
+void heap_chunk_list_insert(heap_chunk_list *list, void *ptr, size_t size)
+{
+
+}
+
+void heap_chunk_list_remove(heap_chunk_list *list, size_t index)
+{
+
+}
+
+
 // Primary heap array
 char heap[CAPACITY] = {0};
 size_t heap_size = 0;
 
-// Secondary smaller array containing heap chunks, which reference allocated spaces in heap
-heap_chunk allocated_chunks[ALLOCATED_CHUNKS_CAPACITY] = {0};
-size_t allocated_chunks_size = 0;
-
-heap_chunk freed_chunks[FREED_CHUNKS_CAPACITY] = {0};
-size_t freed_chunks_size = 0;
+// Secondary and tertiary lists that store heap chunks, which reference allocated and freed spaces in the heap
+heap_chunk_list allocated_chunks = {0};
+heap_chunk_list freed_chunks = {0};
 
 void *heap_alloc(size_t size)
 {
@@ -40,29 +58,29 @@ void *heap_alloc(size_t size)
         .size = size,
     };
 
-    assert(allocated_chunks_size < ALLOCATED_CHUNKS_CAPACITY);
-    allocated_chunks[allocated_chunks_size++] = chunk;
+    assert(allocated_chunks.count < CHUNKS_CAPACITY);
+    allocated_chunks.chunks[allocated_chunks.count++] = chunk;
 
     return result;
 }
 
 void print_allocated_chunks(void)
 {
-    printf("%zu Allocated chunk(s):\n", allocated_chunks_size);
-    for (size_t i = 0; i < allocated_chunks_size; i++)
+    printf("%zu Allocated chunk(s):\n", allocated_chunks.count);
+    for (size_t i = 0; i < allocated_chunks.count; i++)
     {
-        printf("#%zu: start: %p, size: %zu\n", i, allocated_chunks[i].start, allocated_chunks[i].size);
+        printf("#%zu: start: %p, size: %zu\n", i, allocated_chunks.chunks[i].start, allocated_chunks.chunks[i].size);
     }
 }
 
 // Iterates through the allocated chunks array, time complexity O(n)
 void heap_free(void* ptr)
 {
-    for (size_t i = 0; i < allocated_chunks_size; i++)
+    for (size_t i = 0; i < allocated_chunks.count; i++)
     {
-        if (allocated_chunks[i].start == ptr)
+        if (allocated_chunks.chunks[i].start == ptr)
         {
-            //Move chunk from allocated chunks array to freed chunks array
+            //Move chunk from allocated chunks list to freed chunks list
         }
     }
 }
