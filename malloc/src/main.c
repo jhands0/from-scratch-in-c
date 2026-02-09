@@ -7,6 +7,7 @@
 
 // 1 kiB
 #define ALLOCATED_CHUNKS_CAPACITY 1024
+#define FREED_CHUNKS_CAPACITY 1024
 
 // Fixed sized chunks
 typedef struct
@@ -22,6 +23,9 @@ size_t heap_size = 0;
 // Secondary smaller array containing heap chunks, which reference allocated spaces in heap
 heap_chunk allocated_chunks[ALLOCATED_CHUNKS_CAPACITY] = {0};
 size_t allocated_chunks_size = 0;
+
+heap_chunk freed_chunks[FREED_CHUNKS_CAPACITY] = {0};
+size_t freed_chunks_size = 0;
 
 void *heap_alloc(size_t size)
 {
@@ -51,9 +55,16 @@ void print_allocated_chunks(void)
     }
 }
 
+// Iterates through the allocated chunks array, time complexity O(n)
 void heap_free(void* ptr)
 {
-
+    for (size_t i = 0; i < allocated_chunks_size; i++)
+    {
+        if (allocated_chunks[i].start == ptr)
+        {
+            //Move chunk from allocated chunks array to freed chunks array
+        }
+    }
 }
 
 void heap_collect()
