@@ -67,9 +67,15 @@ void heap_chunk_list_insert(heap_chunk_list *list, void *ptr, size_t size)
     list->count += 1;
 }
 
+// Iterate up from index, moving all heap chunks down by one index, time complexity 0(n)
 void heap_chunk_list_remove(heap_chunk_list *list, size_t index)
 {
-
+    assert(index < list->count);
+    for (size_t i = index; i < list->count - 1; i++)
+    {
+        list->chunks[i] = list->chunks[i+1];
+    }
+    list->count -= 1;
 }
 
 void print_heap_chunk_list(const heap_chunk_list *list)
