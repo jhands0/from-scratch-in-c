@@ -25,6 +25,8 @@ size_t allocated_chunks_size = 0;
 
 void *heap_alloc(size_t size)
 {
+    if (size == 0) return NULL;
+
     assert(heap_size + size <= CAPACITY);
     void *result = heap + heap_size;
     heap_size += size;
