@@ -40,6 +40,15 @@ void *heap_alloc(size_t size)
     return result;
 }
 
+void print_allocated_chunks(void)
+{
+    printf("%zu Allocated chunk(s):\n", allocated_chunks_size);
+    for (size_t i = 0; i < allocated_chunks_size; i++)
+    {
+        printf("#%zu: start: %p, size: %zu\n", i, allocated_chunks[i].start, allocated_chunks[i].size);
+    }
+}
+
 void heap_free(void* ptr)
 {
 
@@ -57,5 +66,13 @@ int main()
     {
         root[i] = i + 'A';
     }
+
+    for (int i = 0; i < 50; i++)
+    {
+        heap_alloc(i+1);
+    }
+
+    print_allocated_chunks();
+
     return 0;
 }
