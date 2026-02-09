@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 
 // 640 kB
 #define CAPACITY 640000
@@ -89,6 +90,14 @@ void heap_collect()
 
 }
 
+void print_all_chunks()
+{
+    printf("ALLOCATED CHUNKS:\n");
+    print_heap_chunk_list(&allocated_chunks);
+    printf("\nFREED CHUNKS:\n");
+    print_heap_chunk_list(&freed_chunks);
+}
+
 int main()
 {
     char *root = heap_alloc(26);
@@ -101,6 +110,8 @@ int main()
     {
         heap_alloc(i+1);
     }
+
+    print_all_chunks();
 
     return 0;
 }
