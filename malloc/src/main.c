@@ -1,11 +1,27 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <assert.h>
 
 // 640 kB
 #define CAPACITY 640000
 
+// 1 kiB
+#define ALLOCATED_CHUNKS_CAPACITY 1024
+
+// Fixed sized chunks
+typedef struct
+{
+    void *start;
+    size_t size;
+} heap_chunk;
+
+// Primary heap array
 char heap[CAPACITY] = {0};
 size_t heap_size = 0;
+
+// Secondary smaller array containing heap chunks, which reference allocated spaces in heap
+heap_chunk allocated_chunks[ALLOCATED_CHUNKS_CAPACITY] = {0};
+size_t allocated_chunks_size = 0;
 
 void *heap_alloc(size_t size)
 {
