@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 // 640 kB
-#define CAPACITY 640000
+#define HEAP_CAPACITY 640000
 
 // 1 kiB
 #define CHUNKS_CAPACITY 1024
@@ -65,7 +65,7 @@ void print_heap_chunk_list(const heap_chunk_list *list)
 
 
 // Primary heap array
-char heap[CAPACITY] = {0};
+char heap[HEAP_CAPACITY] = {0};
 size_t heap_size = 0;
 
 // Secondary and tertiary lists that store heap chunks, which reference allocated and freed spaces in the heap
@@ -76,7 +76,7 @@ void *heap_alloc(size_t size)
 {
     if (size <= 0) return NULL;
 
-    assert(heap_size + size <= CAPACITY);
+    assert(heap_size + size <= HEAP_CAPACITY);
     void *result = heap + heap_size;
     heap_size += size;
 
