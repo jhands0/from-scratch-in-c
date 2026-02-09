@@ -1,16 +1,8 @@
-# (name of program)
+# Malloc
 
-Description of program
+My attempt at implementing a variable-sized chunk memory allocator in C.
 
 ## Getting Started
-
-### Prerequisites
-
-#### Debian/Ubuntu
-
-#### Fedora
-
-#### From Source
 
 ### Installation
 
