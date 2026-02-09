@@ -28,6 +28,15 @@ void *heap_alloc(size_t size)
     assert(heap_size + size <= CAPACITY);
     void *result = heap + heap_size;
     heap_size += size;
+
+    const heap_chunk chunk = {
+        .start = result,
+        .size = size,
+    };
+
+    assert(allocated_chunks_size < ALLOCATED_CHUNKS_CAPACITY);
+    allocated_chunks[allocated_chunks_size++] = chunk;
+
     return result;
 }
 
