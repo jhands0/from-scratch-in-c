@@ -11,7 +11,7 @@
 
 
 
-// Fixed sized chunks
+// Heap chunk structure, which can represent variable size chunks
 typedef struct
 {
     void *start;
@@ -23,6 +23,7 @@ typedef struct
     size_t count;
     heap_chunk chunks[CHUNKS_CAPACITY];
 } heap_chunk_list;
+
 
 int heap_chunk_list_compare(const void *a, const void *b)
 {
@@ -67,7 +68,7 @@ void heap_chunk_list_insert(heap_chunk_list *list, void *ptr, size_t size)
     list->count += 1;
 }
 
-// Iterate up from index, moving all heap chunks down by one index, time complexity 0(n)
+// Iterate up from index, moving all heap chunks down by one index, time complexity O(n)
 void heap_chunk_list_remove(heap_chunk_list *list, size_t index)
 {
     assert(index < list->count);
@@ -83,7 +84,7 @@ void print_heap_chunk_list(const heap_chunk_list *list)
     printf("%zu Chunk(s):\n", list->count);
     for (size_t i = 0; i < list->count; i++)
     {
-        printf("#%zu: start: %p, size: %zu\n", i, list->chunks[i].start, list->chunks[i].size);
+        printf("#%zu: start: %p, size: %zu\n", i+1, list->chunks[i].start, list->chunks[i].size);
     }
 }
 
@@ -146,7 +147,7 @@ int main()
 
     for (int i = 0; i < 50; i++)
     {
-        heap_alloc(i+1);
+        heap_alloc(i);
     }
 
     print_all_chunks();
