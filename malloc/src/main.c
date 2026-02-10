@@ -101,7 +101,9 @@ heap_chunk_list freed_chunks = {0};
 
 void *heap_alloc(size_t size)
 {
-    if (size <= 0) return NULL;
+    if (size <= 0) {
+        return NULL;
+    }
 
     assert(heap_size + size <= HEAP_CAPACITY);
     void *result = heap + heap_size;
@@ -112,15 +114,14 @@ void *heap_alloc(size_t size)
     return result;
 }
 
-// Iterates through the allocated chunks array, time complexity O(n)
-void heap_free(void* ptr)
+void heap_free(void *ptr)
 {
-    for (size_t i = 0; i < allocated_chunks.count; i++)
+    if (ptr != NULL)
     {
-        if (allocated_chunks.chunks[i].start == ptr)
-        {
-            //Move chunk from allocated chunks list to freed chunks list
-        }
+        const int index = heap_chunk_list_find(&allocated_chunks, ptr);
+        assert(index >= 0);
+        heap_chunk_list_insert(&freed_chunks, allocated_chunks.chunks[index].start, allocated_chunks.chunks[index].size);
+        heap_chunk_list_remove(&allocated_chunks, (size_t) index);
     }
 }
 
@@ -139,15 +140,19 @@ void print_all_chunks()
 
 int main()
 {
-    char *root = heap_alloc(26);
-    for (int i = 0; i < 26; i++)
-    {
-        root[i] = i + 'A';
-    }
+    //char *root = heap_alloc(26);
+    //for (int i = 0; i < 26; i++)
+    //{
+    //    root[i] = i + 'A';
+    //}
 
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 10; i++)
     {
-        heap_alloc(i);
+        void *ptr = heap_alloc(i);
+        if (i % 3 == 0)
+        {
+            heap_free(ptr);
+        }
     }
 
     print_all_chunks();
