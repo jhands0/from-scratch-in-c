@@ -128,12 +128,16 @@ heap_chunk_list freed_chunks = {
         [0] = {.start = heap, .size = sizeof(heap)}
     },
 };
+heap_chunk_list temp_chunks = {0};
 
 void *heap_alloc(size_t size)
 {
     if (size <= 0) {
         return NULL;
     }
+
+    heap_chunk_list_merge(&temp_chunks, &freed_chunks);
+    freed_chunks = temp_chunks;
 
     for (size_t i = 0; i < freed_chunks.count; i++) {
         const heap_chunk chunk = freed_chunks.chunks[i];
