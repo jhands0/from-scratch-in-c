@@ -93,11 +93,15 @@ void print_heap_chunk_list(const heap_chunk_list *list)
 
 // Primary heap array
 char heap[HEAP_CAPACITY] = {0};
-size_t heap_size = 0;
 
 // Secondary and tertiary lists that store heap chunks, which reference allocated and freed spaces in the heap
 heap_chunk_list allocated_chunks = {0};
-heap_chunk_list freed_chunks = {0};
+heap_chunk_list freed_chunks = {
+    .count = 1,
+    .chunks = {
+        [0] = {.start = heap, .size = sizeof(heap)}
+    },
+};
 
 void *heap_alloc(size_t size)
 {
@@ -105,13 +109,24 @@ void *heap_alloc(size_t size)
         return NULL;
     }
 
-    assert(heap_size + size <= HEAP_CAPACITY);
-    void *result = heap + heap_size;
-    heap_size += size;
+    for (size_t i = 0; i < freed_chunks.count; i++) {
+        const heap_chunk chunk = freed_chunks.chunks[i];
+        if (freed_chunks.chunks[i].size >= size) {
+            heap_chunk_list_remove(&freed_chunks, i);
 
-    heap_chunk_list_insert(&allocated_chunks, result, size);
+            const size_t tail_size = chunk.size - size;
+            heap_chunk_list_insert(&allocated_chunks, chunk.start, size);
 
-    return result;
+            if (tail_size > 0) {
+                heap_chunk_list_insert(&freed_chunks, chunk.start + size, tail_size);
+            }
+
+            return chunk.start;
+        }
+    }
+
+    // Out of memory, no free chunks
+    return NULL;
 }
 
 void heap_free(void *ptr)
