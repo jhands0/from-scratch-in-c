@@ -194,7 +194,7 @@ int main()
     for (int i = 0; i < 10; i++)
     {
         void *ptr = heap_alloc(i);
-        if (i % 3 == 0)
+        if (i % 2 == 0)
         {
             heap_free(ptr);
         }
@@ -202,10 +202,7 @@ int main()
 
     print_all_chunks();
 
-    for (int i = 1; i < 3; i++)
-    {
-        heap_alloc(i);
-    }
+    heap_alloc(9);
 
     print_all_chunks();
 
