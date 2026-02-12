@@ -25,30 +25,15 @@ typedef struct
 } heap_chunk_list;
 
 
-int heap_chunk_list_compare(const void *a, const void *b)
-{
-    const heap_chunk *a_chunk = a;
-    const heap_chunk *b_chunk = b;
-    return a_chunk->start - b_chunk->start;
-}
-
 int heap_chunk_list_find(const heap_chunk_list *list, void *ptr)
 {
-    heap_chunk key = {
-        .start = ptr,
-    };
-
-    // binary search on chunk list
-    heap_chunk *result = bsearch(&key, list->chunks, list->count, sizeof(list->chunks[0]), heap_chunk_list_compare);
-    if (result != 0)
+    for (size_t i = 0; i < list->count; i++)
     {
-        assert(list->chunks <= result);
-        return (result - list->chunks) / sizeof(list->chunks[0]);
+        if (list->chunks[i].start == ptr) {
+            return (int) i;
+        }
     }
-    else
-    {
-        return -1;
-    }
+    return -1;
 }
 
 // Insert heap chunk at end of sorted list, use reverse bubble sort to make new list sorted, time complexity O(n)
@@ -165,6 +150,7 @@ void heap_free(void *ptr)
     {
         const int index = heap_chunk_list_find(&allocated_chunks, ptr);
         assert(index >= 0);
+        assert(ptr == allocated_chunks.chunks[index].start);
         heap_chunk_list_insert(&freed_chunks, allocated_chunks.chunks[index].start, allocated_chunks.chunks[index].size);
         heap_chunk_list_remove(&allocated_chunks, (size_t) index);
     }
