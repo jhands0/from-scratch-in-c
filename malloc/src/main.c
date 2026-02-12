@@ -172,5 +172,12 @@ int main()
 
     print_all_chunks();
 
+    for (int i = 1; i < 3; i++)
+    {
+        heap_alloc(i);
+    }
+
+    print_all_chunks();
+
     return 0;
 }
