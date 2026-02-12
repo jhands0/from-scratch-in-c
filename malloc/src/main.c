@@ -68,6 +68,32 @@ void heap_chunk_list_insert(heap_chunk_list *list, void *ptr, size_t size)
     list->count += 1;
 }
 
+void heap_chunk_list_merge(heap_chunk_list *dst, const heap_chunk_list *src)
+{
+    dst->count = 0;
+    for (size_t i = 0; i < src->count; i++)
+    {
+        const heap_chunk chunk = src->chunks[i];
+
+        if (dst->count > 0)
+        {
+            heap_chunk *top_chunk = &dst->chunks[dst->count - 1];
+            if (top_chunk->start + top_chunk->size == chunk.start)
+            {
+                top_chunk->size += chunk.size;
+            }
+            else
+            {
+                heap_chunk_list_insert(dst, chunk.start, chunk.size);
+            }
+        }
+        else
+        {
+            heap_chunk_list_insert(dst, chunk.start, chunk.size);
+        }
+    }
+}
+
 // Iterate up from index, moving all heap chunks down by one index, time complexity O(n)
 void heap_chunk_list_remove(heap_chunk_list *list, size_t index)
 {
