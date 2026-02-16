@@ -29,7 +29,8 @@ int heap_chunk_list_find(const heap_chunk_list *list, void *ptr)
 {
     for (size_t i = 0; i < list->count; i++)
     {
-        if (list->chunks[i].start == ptr) {
+        if (list->chunks[i].start == ptr)
+        {
             return (int) i;
         }
     }
@@ -124,15 +125,18 @@ void *heap_alloc(size_t size)
     heap_chunk_list_merge(&temp_chunks, &freed_chunks);
     freed_chunks = temp_chunks;
 
-    for (size_t i = 0; i < freed_chunks.count; i++) {
+    for (size_t i = 0; i < freed_chunks.count; i++)
+    {
         const heap_chunk chunk = freed_chunks.chunks[i];
-        if (freed_chunks.chunks[i].size >= size) {
+        if (freed_chunks.chunks[i].size >= size)
+        {
             heap_chunk_list_remove(&freed_chunks, i);
 
             const size_t tail_size = chunk.size - size;
             heap_chunk_list_insert(&allocated_chunks, chunk.start, size);
 
-            if (tail_size > 0) {
+            if (tail_size > 0)
+            {
                 heap_chunk_list_insert(&freed_chunks, chunk.start + size, tail_size);
             }
 
