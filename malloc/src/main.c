@@ -1,10 +1,13 @@
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 
 // 640 kB
 #define HEAP_CAPACITY 640000
+
+static_assert(HEAP_CAPACITY % sizeof(uintptr_t) == 0, "Heap capacity value is not divisible by the size of a word");
 
 // 1 kiB
 #define CHUNKS_CAPACITY 1024
@@ -14,7 +17,7 @@
 // Heap chunk structure, which can represent variable size chunks
 typedef struct
 {
-    void *start;
+    uintptr_t *start;
     size_t size;
 } heap_chunk;
 
@@ -25,7 +28,7 @@ typedef struct
 } heap_chunk_list;
 
 
-int heap_chunk_list_find(const heap_chunk_list *list, void *ptr)
+int heap_chunk_list_find(const heap_chunk_list *list, uintptr_t *ptr)
 {
     for (size_t i = 0; i < list->count; i++)
     {
@@ -104,7 +107,7 @@ void print_heap_chunk_list(const heap_chunk_list *list)
 
 
 // Primary heap array
-char heap[HEAP_CAPACITY] = {0};
+uintptr_t heap[HEAP_CAPACITY] = {0};
 
 // Secondary and tertiary lists that store heap chunks, which reference allocated and freed spaces in the heap
 heap_chunk_list allocated_chunks = {0};
@@ -116,11 +119,13 @@ heap_chunk_list freed_chunks = {
 };
 heap_chunk_list temp_chunks = {0};
 
-void *heap_alloc(size_t size)
+void *heap_alloc(size_t bytes)
 {
-    if (size <= 0) {
+    if (bytes <= 0) {
         return NULL;
     }
+
+    const size_t words = (bytes + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
 
     heap_chunk_list_merge(&temp_chunks, &freed_chunks);
     freed_chunks = temp_chunks;
@@ -128,16 +133,16 @@ void *heap_alloc(size_t size)
     for (size_t i = 0; i < freed_chunks.count; i++)
     {
         const heap_chunk chunk = freed_chunks.chunks[i];
-        if (freed_chunks.chunks[i].size >= size)
+        if (freed_chunks.chunks[i].size >= words)
         {
             heap_chunk_list_remove(&freed_chunks, i);
 
-            const size_t tail_size = chunk.size - size;
-            heap_chunk_list_insert(&allocated_chunks, chunk.start, size);
+            const size_t tail_size = chunk.size - words;
+            heap_chunk_list_insert(&allocated_chunks, chunk.start, words);
 
             if (tail_size > 0)
             {
-                heap_chunk_list_insert(&freed_chunks, chunk.start + size, tail_size);
+                heap_chunk_list_insert(&freed_chunks, chunk.start + words, tail_size);
             }
 
             return chunk.start;
