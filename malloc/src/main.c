@@ -5,9 +5,11 @@
 #include <stdlib.h>
 
 // 640 kB
-#define HEAP_CAPACITY 640000
+#define HEAP_CAPACITY_BYTES 640000
 
-static_assert(HEAP_CAPACITY % sizeof(uintptr_t) == 0, "Heap capacity value is not divisible by the size of a word");
+static_assert(HEAP_CAPACITY_BYTES % sizeof(uintptr_t) == 0, "Heap capacity value is not divisible by the size of a word");
+
+#define HEAP_CAPACITY_WORDS (HEAP_CAPACITY_BYTES / sizeof(uintptr_t))
 
 // 1 kiB
 #define CHUNKS_CAPACITY 1024
@@ -107,7 +109,7 @@ void print_heap_chunk_list(const heap_chunk_list *list)
 
 
 // Primary heap array
-uintptr_t heap[HEAP_CAPACITY] = {0};
+uintptr_t heap[HEAP_CAPACITY_WORDS] = {0};
 
 // Secondary and tertiary lists that store heap chunks, which reference allocated and freed spaces in the heap
 heap_chunk_list allocated_chunks = {0};
