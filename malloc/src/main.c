@@ -169,7 +169,18 @@ void heap_free(void *ptr)
 
 void heap_collect()
 {
-
+    size_t heap_ptr_count = 0;
+    for (size_t i = 0; i < allocated_chunks.count; i++)
+    {
+        for (size_t j = 0; j < allocated_chunks.chunks[i].size; j++)
+        {
+            uintptr_t *p = (uintptr_t*) allocated_chunks.chunks[i].start[j];
+            if (heap <= p && p < heap + HEAP_CAPACITY_WORDS)
+            {
+                heap_ptr_count += 1;
+            }
+        }
+    }
 }
 
 void print_all_chunks()
