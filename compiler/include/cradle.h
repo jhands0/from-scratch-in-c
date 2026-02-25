@@ -13,7 +13,7 @@ void GetChar();
 void Error(char *s);
 void Abort(char *s);
 void Expected(char *s);
-void Match(char *s);
+void Match(char x);
 
 int IsAlpha(char c);
 int IsDigit(char c);
