@@ -1,6 +1,7 @@
-# (name of program)
+# Doppler
 
-Description of program
+This program contains an object the produces waves that propergate from itself.
+The object can be moved to visualise the doppler effect.
 
 ## Getting Started
 
@@ -28,4 +29,6 @@ make release
 
 ## Usage
 
-### Examples
+```sh
+./out
+```
