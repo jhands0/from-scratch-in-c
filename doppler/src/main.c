@@ -53,6 +53,11 @@ int main(int argc, char **argv)
         }
 
         propagate_waves(waves, current_waves, delta_time);
+
+        if (IsKeyDown(KEY_RIGHT))   vehicle.x += 0.2;
+        if (IsKeyDown(KEY_LEFT))    vehicle.x -= 0.2;
+        if (IsKeyDown(KEY_UP))      vehicle.y -= 0.2;
+        if (IsKeyDown(KEY_DOWN))    vehicle.y += 0.2;
         
         BeginDrawing();
         
@@ -65,8 +70,6 @@ int main(int argc, char **argv)
         }
 
         EndDrawing();
-
-        //vehicle.x += 2;
     }
 
     return 0;
