@@ -9,7 +9,19 @@ void compress()
     int cnt = 1;
     while ((next_char = getchar()) != EOF)
     {
-        if (next_char == seen_char) cnt++;
+        if (next_char == seen_char)
+        {
+            cnt++;
+
+            if (cnt >= 255)
+            {
+                putchar(seen_char);
+                putchar(cnt);
+
+                cnt = 0;
+            }
+        }
+
         else 
         {
             putchar(seen_char);
@@ -19,6 +31,9 @@ void compress()
             cnt = 1;
         }
     }
+    cnt++;
+    putchar(seen_char);
+    putchar(cnt);    
 }
 
 int main(int argc, char **argv)
