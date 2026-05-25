@@ -1,6 +1,6 @@
-# (name of program)
+# rle
 
-Description of program
+A program to compress and restore files using run length encoding.
 
 ## Getting Started
 
@@ -17,7 +17,7 @@ Description of program
 1. Clone the repo
 
 ```sh
-git clone -b <branch> https://github.com/jhands0/from-scratch-in-c.git
+git clone -b rle https://github.com/jhands0/from-scratch-in-c.git
 ```
 
 2. Build the program
