@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define WIDTH 900
 #define HEIGHT 600
@@ -71,14 +72,15 @@ void bubble_step()
 int main(int argc, char **argv)
 {
     bool inverse;
-    if (argc == 0 || argc > 2 || argv[1] == "-h")
+    if (argc == 0 || argc > 2) exit(-1);
+    else if (argc == 2 && !strcmp(argv[1], "-h"))
     {
         printf("Usage: %s <options>\n", argv[0]);
         printf("Options:\n \t-h\tHelp menu\n\t-r\tRandom order\n\t-i\tInverse order\n");
-        inverse = false;
+        exit(-1);
     }
-    else if (argc == 1 || (argc == 2 && argv[1] == "-r")) inverse = false;
-    else if (argc == 2 && argv[1] == "-i") inverse = true; 
+    else if (argc == 1 || (argc == 2 && !strcmp(argv[1], "-r"))) inverse = false;
+    else if (argc == 2 && !strcmp(argv[1], "-i")) inverse = true; 
 
     InitWindow(WIDTH, HEIGHT, "Sorting Algorithm Viewer");
 
