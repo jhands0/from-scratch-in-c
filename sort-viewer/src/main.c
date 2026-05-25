@@ -5,7 +5,7 @@
 
 #define WIDTH 900
 #define HEIGHT 600
-#define NUM_ITEMS 10
+#define NUM_ITEMS 50
 
 int array[NUM_ITEMS];
 
@@ -15,6 +15,20 @@ void init_array(int inverse)
     {
         if (inverse) array[i] = NUM_ITEMS - i + 1;
         else array[i] = rand() % NUM_ITEMS + 1;
+    }
+}
+
+void draw_array(Color color)
+{
+    int x_offset = 30;
+    int y_offset;
+    int width = (WIDTH - (x_offset * 2)) / (NUM_ITEMS + (NUM_ITEMS * 0.1));
+    int gap;
+    for (int i = 0; i < NUM_ITEMS; i++)
+    {
+        y_offset = array[i] * 5;
+        gap = i * (width + 3);
+        DrawRectangle(x_offset - 5 + gap, HEIGHT * 0.8 - y_offset, width, y_offset, color);
     }
 }
 
@@ -40,7 +54,7 @@ int main(int argc, char **argv)
     {
         BeginDrawing();
 
-        DrawRectangle(50, 50, 30, 100, LIGHTGRAY);
+        draw_array(LIGHTGRAY);
 
         EndDrawing();
     }
