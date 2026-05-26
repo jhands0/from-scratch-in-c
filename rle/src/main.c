@@ -36,6 +36,22 @@ void compress()
     putchar(cnt);    
 }
 
+void decompress()
+{
+    while (1)
+    {
+        int c = getchar();
+        if (c == EOF) break;
+        int cnt = getchar();
+        if (cnt == EOF) break;
+
+        for (int i = 0; i < cnt; i++)
+        {
+            putchar(c);
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 2)
@@ -51,7 +67,7 @@ int main(int argc, char **argv)
 
     if (!strcmp(argv[1], "decompress") || !strcmp(argv[1], "-d"))
     {
-        //decompress();
+        decompress();
     }
 
     return 0;
