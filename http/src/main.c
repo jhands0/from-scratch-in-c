@@ -8,6 +8,7 @@
 
 #define PORT "8080"
 #define BACKLOG_LEN 15
+#define MESSAGE_LEN 1000
 
 void output_error(char *msg)
 {
@@ -43,6 +44,11 @@ int main()
 
     addr_size = sizeof(incoming_addr);
     new_fd = accept(sockfd, (struct sockaddr *) &incoming_addr, &addr_size);
+
+    char recieved_message[MESSAGE_LEN];
+    memset(recieved_message, 0, MESSAGE_LEN);
+    int num_bytes = recv(new_fd, recieved_message, MESSAGE_LEN, 0);
+    puts(recieved_message);
 
     freeaddrinfo(server_info);
 }
