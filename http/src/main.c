@@ -29,6 +29,12 @@ int main()
         perror("Could not initialize socket.\n");
         exit(-1);
     }
+
+    if (bind(sockfd, server_info->ai_addr, res->ai_addrlen) == -1)
+    {
+        perror("Could not bind socket to address.\n");
+        exit(-1);
+    }
     
 
     while(1)
