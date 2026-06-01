@@ -6,9 +6,10 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include "../include/http.h"
+
 #define PORT "8080"
 #define BACKLOG_LEN 15
-#define MESSAGE_LEN 1000
 
 void output_error(char *msg)
 {
@@ -51,4 +52,5 @@ int main()
     puts(recieved_message);
 
     freeaddrinfo(server_info);
+    return 0;
 }
