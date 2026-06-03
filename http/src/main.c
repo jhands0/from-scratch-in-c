@@ -11,6 +11,24 @@
 #define PORT "8080"
 #define BACKLOG_LEN 15
 
+request_type_t get_request_type(char recieved_message[MESSAGE_LEN])
+{
+    if (strncmp(recieved_message, "GET", 3) == 0) return GET;
+    else if (strncmp(recieved_message, "PUT", 3) == 0) return PUT;
+    else if (strncmp(recieved_message, "HEAD", 4) == 0) return HEAD;
+    else if (strncmp(recieved_message, "POST", 4) == 0) return POST;
+    else if (strncmp(recieved_message, "TRACE", 5) == 0) return TRACE;
+    else if (strncmp(recieved_message, "PATCH", 5) == 0) return PATCH;
+    else if (strncmp(recieved_message, "DELETE", 6) == 0) return DELETE;
+    else if (strncmp(recieved_message, "CONNECT", 7) == 0) return CONNECT;
+    else if (strncmp(recieved_message, "OPTIONS", 7) == 0) return OPTIONS;
+}
+
+void parse_message(char recieved_message[MESSAGE_LEN], http_message_t new)
+{
+    new.type = get_request_type(recieved_message);
+}
+
 void output_error(char *msg)
 {
     fprintf(stderr, "%s\n", msg);

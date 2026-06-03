@@ -1,9 +1,10 @@
 #define MESSAGE_LEN     1000
 #define HOST_LEN        50
 #define USER_AGENT_LEN  100
+#define BODY_LEN        1000
+#define RESPONSE_LEN    1000
 
-enum request_type
-{
+typedef enum {
     GET,
     HEAD,
     POST,
@@ -13,22 +14,20 @@ enum request_type
     OPTIONS,
     TRACE,
     PATCH
-};
+} request_type_t;
 
-enum response_code
-{
+typedef enum {
     OK,
     NO_CONTENT,
     BAD_REQUEST,
     UNAUTHORIZED,
     FORBIDDEN,
-    NOT_FOUND,
-};
+    NOT_FOUND
+} response_code_t;
 
-typedef struct 
-{
-    request_type    type,
-    char            host[HOST_LEN],
-    char            user_agent[USER_AGENT_LEN],
-    char            body[1000],          
-} http_message;
+typedef struct {
+    request_type_t  type;
+    char            host[HOST_LEN];
+    char            user_agent[USER_AGENT_LEN];
+    char            body[BODY_LEN];   
+} http_message_t;
