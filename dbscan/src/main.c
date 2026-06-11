@@ -74,6 +74,8 @@ int main(void)
     Indices wave = {0};
     Indices next_wave = {0};
 
+    bool show_radius = false;
+
     InitWindow(WIDTH, HEIGHT, "DBSCAN");
     SetTargetFPS(60);
     while (!WindowShouldClose())
@@ -86,6 +88,8 @@ int main(void)
             };
             da_append(&points, point);
         }
+
+        if (IsKeyPressed(KEY_R)) show_radius = !show_radius;
 
         if (IsKeyPressed(KEY_SPACE))
         {
@@ -145,7 +149,10 @@ int main(void)
         {
             Point point = points.items[index];
             DrawCircleV(point.position, POINT_RADIUS, point.colour);
-            DrawRing(point.position, DBSCAN_RADIUS, DBSCAN_RADIUS + 2, 0, 360, 70, point.colour);
+            if (show_radius) 
+            {
+                DrawRing(point.position, DBSCAN_RADIUS, DBSCAN_RADIUS + 2, 0, 360, 70, point.colour);
+            }
         }
         EndDrawing();
     }
