@@ -111,10 +111,22 @@ int main(void)
                     {
                         if (!points.items[target].visited)
                         {
-                            points.items[target].visited = true;
-                            points.items[target].colour = colour;
-                            points_visited += 1;
-                            da_append(&wave, target);
+                            neighbours.count = 0;
+                            get_neighbours(points, target, &neighbours);
+
+                            if (neighbours.count == 0)
+                            {
+                                points.items[target].visited = true;
+                                points.items[target].colour = GRAY;
+                                points_visited += 1;
+                            }
+                            else
+                            {
+                                points.items[target].visited = true;
+                                points.items[target].colour = colour;
+                                points_visited += 1;
+                                da_append(&wave, target);
+                            }
                             break;
                         }
                     }
