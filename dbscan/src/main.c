@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #include "../include/utils.h"
 
@@ -20,6 +21,7 @@ typedef struct
 {
     Vector2 position;
     size_t n_neighbours;
+    bool visited;
 } Point;
 
 typedef struct
@@ -67,6 +69,9 @@ int main(void)
     Points points = {0};
     Indices neighbours = {0};
 
+    Indices wave = {0};
+    Indices next_wave = {0};
+
     InitWindow(WIDTH, HEIGHT, "DBSCAN");
     SetTargetFPS(60);
     while (!WindowShouldClose())
@@ -81,11 +86,37 @@ int main(void)
 
         if (IsKeyPressed(KEY_SPACE))
         {
-            for (size_t target = 0; target < points.count; target++)
+            for (size_t i = 0; i < points.count; i++)
             {
-                neighbours.count = 0;
-                get_neighbours(points, target, &neighbours);
-                points.items[target].n_neighbours = neighbours.count;
+                points.items[i].visited = false;
+            }
+
+            if (points.count > 0)
+            {
+                size_t target;
+                wave.count = 0;
+                da_append(&wave, 0);
+                points.items[da_last(&wave)].visited = true;
+                
+                while (wave.count > 0)
+                {
+                    next_wave.count = 0;
+                    for (size_t j = 0; j < wave.count; j++)
+                    {
+                        neighbours.count = 0;
+                        target = wave.items[j];
+                        get_neighbours(points, target, &neighbours);
+                        for (size_t k = 0; k < neighbours.count; k++)
+                        {
+                            if (!points.items[neighbours.items[k]].visited)
+                            {
+                                da_append(&next_wave, neighbours.items[k]);
+                                points.items[da_last(&next_wave)].visited = true;
+                            }
+                        }
+                    }
+                    swap(Indices, wave, next_wave);
+                }
             }
         }
         BeginDrawing();
@@ -93,18 +124,22 @@ int main(void)
         for (size_t index = 0; index < points.count; index++)
         {
             Point point = points.items[index];
-            DrawCircleV(point.position, POINT_RADIUS, POINT_COLOUR);
+            Color colour = POINT_COLOUR;
+            if (point.visited) colour = PINK;
+            DrawCircleV(point.position, POINT_RADIUS, colour);
             if (point.n_neighbours > 0)
             {
                 DrawText(TextFormat("%zu", point.n_neighbours), point.position.x, point.position.y, FONT_SIZE, FONT_COLOUR);
             }
-            DrawRing(point.position, DBSCAN_RADIUS, DBSCAN_RADIUS + 2, 0, 360, 70, POINT_COLOUR);
+            DrawRing(point.position, DBSCAN_RADIUS, DBSCAN_RADIUS + 2, 0, 360, 70, colour);
         }
         EndDrawing();
     }
     CloseWindow();
 
     da_free(neighbours);
+    da_free(wave);
+    da_free(next_wave);
     da_free(points);
 
     return 0;

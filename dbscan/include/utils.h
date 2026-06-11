@@ -25,8 +25,14 @@
 #define da_append(da, item)                 \
     do                                      \
     {                                       \
-        da_reserve((da), (da)->count + 1);     \
+        da_reserve((da), (da)->count + 1);  \
         (da)->items[(da)->count++] = (item);\
     } while(0)
 
 #define da_free(da) free((da).items)
+
+#define da_first(da) (da)->items[(assert((da)->count > 0), 0)]
+
+#define da_last(da) (da)->items[(assert((da)->count > 0), (da)->count-1)]
+
+#define swap(T, a, b) do { T t = a; a = b; b = t; } while(0)
