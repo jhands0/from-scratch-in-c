@@ -9,19 +9,21 @@
 #define HEIGHT 600
 
 #define POINT_RADIUS 10
-#define POINT_COLOUR RED
+#define POINT_COLOUR WHITE
 
 #define DBSCAN_RADIUS 100
 #define DBSCAN_MINPTS 5
 
-#define FONT_SIZE 40
-#define FONT_COLOUR WHITE
+Color all_colours[] = {
+    PINK, YELLOW, GREEN, SKYBLUE, PURPLE, BEIGE, RED, GOLD, LIME, BLUE, VIOLET, BROWN, MAROON, ORANGE, MAGENTA
+};
+size_t colours_len = sizeof(all_colours) / sizeof(all_colours[0]);
 
 typedef struct
 {
     Vector2 position;
-    size_t n_neighbours;
     bool visited;
+    Color colour;
 } Point;
 
 typedef struct
@@ -80,6 +82,7 @@ int main(void)
         {
             Point point = {
                 .position = GetMousePosition(),
+                .colour = POINT_COLOUR,
             };
             da_append(&points, point);
         }
@@ -93,29 +96,46 @@ int main(void)
 
             if (points.count > 0)
             {
+                size_t points_visited = 0;
                 size_t target;
-                wave.count = 0;
-                da_append(&wave, 0);
-                points.items[da_last(&wave)].visited = true;
-                
-                while (wave.count > 0)
+
+                for (size_t cluster = 0; points_visited < points.count; cluster++)
                 {
-                    next_wave.count = 0;
-                    for (size_t j = 0; j < wave.count; j++)
+                    wave.count = 0;
+                    Color colour = all_colours[cluster % colours_len];
+                    for (target = 0; target < points.count; target++)
                     {
-                        neighbours.count = 0;
-                        target = wave.items[j];
-                        get_neighbours(points, target, &neighbours);
-                        for (size_t k = 0; k < neighbours.count; k++)
+                        if (!points.items[target].visited)
                         {
-                            if (!points.items[neighbours.items[k]].visited)
-                            {
-                                da_append(&next_wave, neighbours.items[k]);
-                                points.items[da_last(&next_wave)].visited = true;
-                            }
+                            points.items[target].visited = true;
+                            points.items[target].colour = colour;
+                            points_visited += 1;
+                            da_append(&wave, target);
+                            break;
                         }
                     }
-                    swap(Indices, wave, next_wave);
+
+                    while (wave.count > 0)
+                    {
+                        next_wave.count = 0;
+                        for (size_t j = 0; j < wave.count; j++)
+                        {
+                            neighbours.count = 0;
+                            target = wave.items[j];
+                            get_neighbours(points, target, &neighbours);
+                            for (size_t k = 0; k < neighbours.count; k++)
+                            {
+                                if (!points.items[neighbours.items[k]].visited)
+                                {
+                                    da_append(&next_wave, neighbours.items[k]);
+                                    points.items[da_last(&next_wave)].visited = true;
+                                    points.items[da_last(&next_wave)].colour = colour;
+                                    points_visited += 1;
+                                }
+                            }
+                        }
+                        swap(Indices, wave, next_wave);
+                    }
                 }
             }
         }
@@ -124,14 +144,8 @@ int main(void)
         for (size_t index = 0; index < points.count; index++)
         {
             Point point = points.items[index];
-            Color colour = POINT_COLOUR;
-            if (point.visited) colour = PINK;
-            DrawCircleV(point.position, POINT_RADIUS, colour);
-            if (point.n_neighbours > 0)
-            {
-                DrawText(TextFormat("%zu", point.n_neighbours), point.position.x, point.position.y, FONT_SIZE, FONT_COLOUR);
-            }
-            DrawRing(point.position, DBSCAN_RADIUS, DBSCAN_RADIUS + 2, 0, 360, 70, colour);
+            DrawCircleV(point.position, POINT_RADIUS, point.colour);
+            DrawRing(point.position, DBSCAN_RADIUS, DBSCAN_RADIUS + 2, 0, 360, 70, point.colour);
         }
         EndDrawing();
     }
