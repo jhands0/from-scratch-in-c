@@ -24,12 +24,36 @@ typedef struct
     size_t capacity;
 } Points;
 
-size_t count_neighbors(Points points, Vector2 center)
+typedef struct
+{
+    size_t *items;
+    size_t count;
+    size_t capacity;
+} Indices;
+
+void get_neighbors(Points points, size_t target, Indices *neighbors)
+{
+    if (target >= points.count) return;
+    for (size_t index = 0; index < points.count; index++)
+    {
+        if (index == target) continue;
+        if (Vector2Distance(points.items[index].position, points.items[target].position) <= DBSCAN_RADIUS)
+        {
+            if (neighbors->count + 1 < neighbors->capacity)
+            {
+                neighbors->items[neighbors->count++] = index;
+                neighbors->capacity;
+            }
+        }
+    }
+}
+
+size_t count_neighbors(Points points, Vector2 centre)
 {
     size_t count = 0;
-    for(int i = 0; i < points.count; i++)
+    for(size_t index = 0; index < points.count; index++)
     {
-        if (Vector2Distance(points.items[i].position, center) <= DBSCAN_RADIUS)
+        if (Vector2Distance(points.items[index].position, centre) <= DBSCAN_RADIUS)
         {
             count += 1;
         }
