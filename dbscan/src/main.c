@@ -1,8 +1,8 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+
+#include "../include/utils.h"
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -12,9 +12,6 @@
 
 #define DBSCAN_RADIUS 100
 #define DBSCAN_MINPTS 5
-
-#define POINTS_CAP 100
-#define NEIGHBOURS_CAP 500
 
 #define FONT_SIZE 40
 #define FONT_COLOUR WHITE
@@ -47,11 +44,7 @@ void get_neighbours(Points points, size_t target, Indices *neighbours)
         if (index == target) continue;
         if (Vector2Distance(points.items[index].position, points.items[target].position) <= DBSCAN_RADIUS)
         {
-            if (neighbours->count + 1 < neighbours->capacity)
-            {
-                neighbours->items[neighbours->count] = index;
-                neighbours->count++;
-            }
+            append(neighbours, index);
         }
     }
 }
@@ -71,17 +64,8 @@ size_t count_neighbours(Points points, Vector2 centre)
 
 int main(void)
 {
-    Points points = {
-        .items = (Point*) malloc(POINTS_CAP * sizeof(Point)),
-        .count = 0,
-        .capacity = POINTS_CAP,
-    };
-
-    Indices neighbours = {
-        .items = (size_t*) malloc(NEIGHBOURS_CAP * sizeof(size_t)),
-        .count = 0,
-        .capacity = NEIGHBOURS_CAP,
-    };
+    Points points = {0};
+    Indices neighbours = {0};
 
     InitWindow(WIDTH, HEIGHT, "DBSCAN");
     SetTargetFPS(60);
@@ -92,11 +76,7 @@ int main(void)
             Point point = {
                 .position = GetMousePosition(),
             };
-            if (points.count + 1 < points.capacity)
-            {
-                points.items[points.count] = point;
-                points.count++;
-            }
+            append(&points, point);
         }
 
         if (IsKeyPressed(KEY_SPACE))
