@@ -4,7 +4,7 @@
 #define INIT_CAP 256
 #define DECLTYPE_CAST(T)
 
-#define reserve(da, new_capacity)                                                                               \
+#define da_reserve(da, new_capacity)                                                                            \
     do                                                                                                          \
     {                                                                                                           \
         if ((new_capacity) > (da)->capacity)                                                                    \
@@ -22,9 +22,11 @@
         }                                                                                                       \
     } while(0)
 
-#define append(da, item)                    \
+#define da_append(da, item)                 \
     do                                      \
     {                                       \
-        reserve((da), (da)->count + 1);     \
+        da_reserve((da), (da)->count + 1);     \
         (da)->items[(da)->count++] = (item);\
     } while(0)
+
+#define da_free(da) free((da).items)

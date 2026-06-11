@@ -44,7 +44,7 @@ void get_neighbours(Points points, size_t target, Indices *neighbours)
         if (index == target) continue;
         if (Vector2Distance(points.items[index].position, points.items[target].position) <= DBSCAN_RADIUS)
         {
-            append(neighbours, index);
+            da_append(neighbours, index);
         }
     }
 }
@@ -76,7 +76,7 @@ int main(void)
             Point point = {
                 .position = GetMousePosition(),
             };
-            append(&points, point);
+            da_append(&points, point);
         }
 
         if (IsKeyPressed(KEY_SPACE))
@@ -104,8 +104,8 @@ int main(void)
     }
     CloseWindow();
 
-    free(neighbours.items);
-    free(points.items);
+    da_free(neighbours);
+    da_free(points);
 
     return 0;
 }
