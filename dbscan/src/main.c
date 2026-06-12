@@ -40,13 +40,13 @@ typedef struct
     size_t capacity;
 } Indices;
 
-void get_neighbours(Points points, size_t target, Indices *neighbours)
+void get_neighbours(const Points *points, size_t target, Indices *neighbours)
 {
-    if (target >= points.count) return;
-    for (size_t index = 0; index < points.count; index++)
+    if (target >= points->count) return;
+    for (size_t index = 0; index < points->count; index++)
     {
         if (index == target) continue;
-        if (Vector2Distance(points.items[index].position, points.items[target].position) <= DBSCAN_RADIUS)
+        if (Vector2Distance(points->items[index].position, points->items[target].position) <= DBSCAN_RADIUS)
         {
             da_append(neighbours, index);
         }
@@ -66,13 +66,78 @@ size_t count_neighbours(Points points, Vector2 centre)
     return count;
 }
 
+void bfs_cluster(Points *points)
+{
+    static Indices neighbours = {0};
+    static Indices wave = {0};
+    static Indices next_wave = {0};
+
+    for (size_t i = 0; i < points->count; i++)
+    {
+        points->items[i].visited = false;
+    }
+
+    if (points->count > 0)
+    {
+        size_t points_visited = 0;
+        size_t target;
+
+        for (size_t cluster = 0; points_visited < points->count; cluster++)
+        {
+            wave.count = 0;
+            Color colour = all_colours[cluster % colours_len];
+            for (target = 0; target < points->count; target++)
+            {
+                if (!points->items[target].visited)
+                {
+                    neighbours.count = 0;
+                    get_neighbours(points, target, &neighbours);
+
+                    if (neighbours.count == 0)
+                    {
+                        points->items[target].visited = true;
+                        points->items[target].colour = GRAY;
+                        points_visited += 1;
+                    }
+                    else
+                    {
+                        points->items[target].visited = true;
+                        points->items[target].colour = colour;
+                        points_visited += 1;
+                        da_append(&wave, target);
+                    }
+                    break;
+                }
+            }
+
+            while (wave.count > 0)
+            {
+                next_wave.count = 0;
+                for (size_t j = 0; j < wave.count; j++)
+                {
+                    neighbours.count = 0;
+                    target = wave.items[j];
+                    get_neighbours(points, target, &neighbours);
+                    for (size_t k = 0; k < neighbours.count; k++)
+                    {
+                        if (!points->items[neighbours.items[k]].visited)
+                        {
+                            da_append(&next_wave, neighbours.items[k]);
+                            points->items[da_last(&next_wave)].visited = true;
+                            points->items[da_last(&next_wave)].colour = colour;
+                            points_visited += 1;
+                        }
+                    }
+                }
+                swap(Indices, wave, next_wave);
+            }
+        }
+    }
+}
+
 int main(void)
 {
     Points points = {0};
-    Indices neighbours = {0};
-
-    Indices wave = {0};
-    Indices next_wave = {0};
 
     bool show_radius = false;
 
@@ -91,70 +156,8 @@ int main(void)
 
         if (IsKeyPressed(KEY_R)) show_radius = !show_radius;
 
-        if (IsKeyPressed(KEY_SPACE))
-        {
-            for (size_t i = 0; i < points.count; i++)
-            {
-                points.items[i].visited = false;
-            }
+        if (IsKeyPressed(KEY_SPACE)) bfs_cluster(&points);
 
-            if (points.count > 0)
-            {
-                size_t points_visited = 0;
-                size_t target;
-
-                for (size_t cluster = 0; points_visited < points.count; cluster++)
-                {
-                    wave.count = 0;
-                    Color colour = all_colours[cluster % colours_len];
-                    for (target = 0; target < points.count; target++)
-                    {
-                        if (!points.items[target].visited)
-                        {
-                            neighbours.count = 0;
-                            get_neighbours(points, target, &neighbours);
-
-                            if (neighbours.count == 0)
-                            {
-                                points.items[target].visited = true;
-                                points.items[target].colour = GRAY;
-                                points_visited += 1;
-                            }
-                            else
-                            {
-                                points.items[target].visited = true;
-                                points.items[target].colour = colour;
-                                points_visited += 1;
-                                da_append(&wave, target);
-                            }
-                            break;
-                        }
-                    }
-
-                    while (wave.count > 0)
-                    {
-                        next_wave.count = 0;
-                        for (size_t j = 0; j < wave.count; j++)
-                        {
-                            neighbours.count = 0;
-                            target = wave.items[j];
-                            get_neighbours(points, target, &neighbours);
-                            for (size_t k = 0; k < neighbours.count; k++)
-                            {
-                                if (!points.items[neighbours.items[k]].visited)
-                                {
-                                    da_append(&next_wave, neighbours.items[k]);
-                                    points.items[da_last(&next_wave)].visited = true;
-                                    points.items[da_last(&next_wave)].colour = colour;
-                                    points_visited += 1;
-                                }
-                            }
-                        }
-                        swap(Indices, wave, next_wave);
-                    }
-                }
-            }
-        }
         BeginDrawing();
         ClearBackground(BLACK);
         for (size_t index = 0; index < points.count; index++)
@@ -170,10 +173,6 @@ int main(void)
     }
     CloseWindow();
 
-    da_free(neighbours);
-    da_free(wave);
-    da_free(next_wave);
     da_free(points);
-
     return 0;
 }
