@@ -95,6 +95,7 @@ finish_options:
         goto cleanup;
     }
     fprintf(stderr, "%s on %s.\n", host.release, host.machine);
+    // End linux validation block
 
 
     char hostname[256] = {0};
@@ -140,6 +141,7 @@ finish_options:
 
     close(sockets[1]);
     sockets[1] = 0;
+    // End namespaces block
 
     goto cleanup;
 
