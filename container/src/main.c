@@ -75,6 +75,36 @@ int handle_child_uid_map(pid_t child_pid, int fd)
     return 0;
 }
 
+int userns(struct child_config *config) 
+{
+    fprintf(stderr, "=> trying a user namespace...");
+    int has_userns = !unshare(CLONE_NEWUSER);
+    if (write(config->fd, &has_userns, sizeof(has_userns)) != sizeof(userns)) {
+        fprintf(stderr, "couldn't write: %m\n");
+        return -1;
+    }
+    int result = 0;
+    if (read(config->fd, &result, sizeof(result)) != sizeof(result)) {
+        fprintf(stderr, "couldn't read: %m\n");
+        return -1;
+    }
+    if (result) return -1;
+    if (has_userns) {
+        fprintf(stderr, "done.\n");
+    } else {
+        fprintf(stderr, "unsupported? continuing.\n");
+    }
+    fprintf(stderr, "=> switching to uid %d / gid %d...", config->uid, config->uid);
+    if (setgroups(1, & (gid_t) { config->uid }) ||
+        setresgid(config->uid, config->uid, config->uid) ||
+        setresuid(config->uid, config->uid, config->uid)) {
+            fprintf(stderr, "%m\n");
+            return -1;
+    }
+    fprintf(stderr, "done.\n");
+    return 0;
+}
+
 int child(void *arg)
 {
     struct child_config *config = arg;
