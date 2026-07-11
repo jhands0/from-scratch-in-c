@@ -75,6 +75,28 @@ int handle_child_uid_map(pid_t child_pid, int fd)
     return 0;
 }
 
+int child(void *arg)
+{
+    struct child_config *config = arg;
+    if (sethostname(config->hostname, strlen(config->hostname))
+        || mounts(config)
+        || userns(config)
+        || capabilities()
+        || syscalls()) {
+            close(config->fd);
+            return -1;
+    }
+    if (close(config->fd)) {
+        fprintf(stderr, "close failed: %m\n");
+        return -1;
+    }
+    if (execve(config->argv[0], config->argv, NULL)) {
+        fprintf(stderr, "execve failed! %m.\n");
+        return -1;
+    }
+    return 0;
+}
+
 int main(int argc, char **argv) 
 {
     struct child_config config = {0};
