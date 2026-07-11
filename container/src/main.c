@@ -28,6 +28,8 @@
 
 #define STACK_SIZE (1024 * 1024)
 
+#define USERNS_OFFSET 10000
+#define USERNS_COUNT 2000
 
 struct child_config {
     int     argc;
@@ -36,6 +38,41 @@ struct child_config {
     char    *hostname;
     char    **argv;
     char    *mount_dir;
+}
+
+int handle_child_uid_map(pid_t child_pid, int fd) 
+{
+    int uid_map = 0;
+    int has_userns = -1;
+    if (read(fd, &has_userns, sizeof(has_userns)) != sizeof(has_userns)) {
+        fprintf(stderr, "couldn't read from child!\n");
+        return -1;
+    }
+    if (has_userns) {
+        char path[PATH_MAX] = {0};
+        for (char **file = (char *[]) { "uid_map", "gid_map", 0 }; *file; file++) {
+            if (snprintf(path, sizeof(path), "/proc/%d/%s", child_pid, *file) > sizeof(path)) {
+                fprintf(stderr, "snprintf too big? %m\n");
+                return -1;
+            }
+            fprintf(stderr, "writing %s...", path);
+            if ((uid_map = open(path, O_WRONLY)) == -1) {
+                fprintf(stderr, "open failed: %m\n");
+                return -1;
+            }
+            if (dprintf(uid_map, "0 %d %d\n", USERNS_OFFSET, USERNS_COUNT) == -1) {
+                fprintf(stderr, "dprintf failed: %m\n");
+                close(uid_map);
+                return -1;
+            }
+            close(uid_map);
+        }
+    }
+    if (write(fd, & (int) {0}, sizeof(int)) != sizeof(int)) {
+        fprintf(stderr, "couldn't write: %m\n");
+        return -1;
+    }
+    return 0;
 }
 
 int main(int argc, char **argv) 
