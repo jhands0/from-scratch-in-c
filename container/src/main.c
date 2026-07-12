@@ -26,6 +26,16 @@
 #include <linux/limits.h>
 
 
+struct child_config {
+    int     argc;
+    uid_t   uid;
+    int     fd;
+    char    *hostname;
+    char    **argv;
+    char    *mount_dir;
+};
+
+
 #define STACK_SIZE (1024 * 1024)
 
 #define USERNS_OFFSET 10000
@@ -80,15 +90,6 @@ int capabilities()
     return 0;
 }
 
-
-struct child_config {
-    int     argc;
-    uid_t   uid;
-    int     fd;
-    char    *hostname;
-    char    **argv;
-    char    *mount_dir;
-};
 
 int handle_child_uid_map(pid_t child_pid, int fd) 
 {
