@@ -272,7 +272,7 @@ finish_options:
         | CLONE_NEWNET
         | CLONE_NEWUTS;
 
-    if ((child_pid = clone(child, stack + STACK_SIZE, flags | SIGCHILD, &config)) == -1) {
+    if ((child_pid = clone(child, stack + STACK_SIZE, flags | SIGCHLD, &config)) == -1) {
         fprintf(stderr, "=> clone failed! %m\n");
         err = 1;
         goto clear_resources;
