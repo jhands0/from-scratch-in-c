@@ -88,7 +88,7 @@ struct child_config {
     char    *hostname;
     char    **argv;
     char    *mount_dir;
-}
+};
 
 int handle_child_uid_map(pid_t child_pid, int fd) 
 {
