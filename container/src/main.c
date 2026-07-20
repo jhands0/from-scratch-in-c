@@ -309,6 +309,35 @@ int resources(struct child_config *config)
     return 0;
 }
 
+int free_resources(struct child_config *config) {
+    fprintf(stderr, "=> cleaning cgroups...");
+    for (struct cgrp_control **cgrp = cgrps; *cgrp; cgrp++) {
+        char dir[PATH_MAX] = {0};
+        char task[PATH_MAX] = {0};
+        int task_fd = 0;
+        if (snprintf(dir, sizeof(dir), "/sys/fs/cgroup/%s/%s", (*cgrp)->control, config->hostname) == -1
+            || snprintf(task, sizeof(task), "/sys/cgroup/%s/tasks", (*cgrp)->control) == -1) {
+            fprintf(stderr, "snprintf failed: %m\n");
+            return -1;
+        }
+        if ((task_fd = open(task, O_WRONLY)) == -1) {
+            fprintf(stderr, "opening %s failed: %m\n", task);
+            return -1;
+        }
+        if (write(task_fd, "0", 2) == -1) {
+            fprintf(stderr, "writing to %s failed: %m\n", task);
+            return -1;
+        }
+        close(task_fd);
+        if (rmdir(dir)) {
+            fprintf(stderr, "rmdir %s failed: %m\n", dir);
+            return -1;
+        }
+    }
+    fprintf(stderr, "done.\n");
+    return 0;
+}
+
 
 int handle_child_uid_map(pid_t child_pid, int fd) 
 {
