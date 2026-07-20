@@ -1,31 +1,38 @@
 #include <stdio.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-void shift_rows(int msg[4][4]) {
-    for (int i = 1; i < 4; i++) {
+#define KEY_BITS    128
+const int N_BYTES = KEY_BITS / 8;
+//const int N_ROWS = sqrt(N_BYTES);
+//const int N_COLS = ceil(sqrt(N_BYTES));
+
+void shift_rows(int msg[N_ROWS][N_COLS]) {
+    for (int i = 1; i < N_ROWS; i++) {
         int temp[] = {0, 0, 0, 0};
-        for (int j = 0; j < 4; j++) {
-            int new_j = ((((j - i) % 4) + 4) % 4);
+        for (int j = 0; j < N_COLS; j++) {
+            int new_j = ((((j - i) % N_COLS) + N_COLS) % N_COLS);
             temp[new_j] = msg[i][j];
         }
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < N_COLS; j++) {
             msg[i][j] = temp[j];
         }
     }
 }
 
-void mix_columns(int msg[4][4]) {
-    int matrix[4][4] = {
+void mix_columns(int msg[N_ROWS][N_COLS]) {
+    int matrix[N_ROWS][N_COLS] = {
         {2, 3, 1, 1},
         {1, 2, 3, 1},
         {1, 1, 2, 3},
         {3, 1, 1, 2},
-    };
+    }; // This matrix works for only 128 bit key size, and needs to be expanded
 
-    for (int i = 0; i < 4; i++) {
-        int temp[] = {0, 0, 0, 0};
-        for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < N_ROWS; i++) {
+        int temp[N_COLS] = {};
+        for (int j = 0; j < N_COLS; j++) {
             msg[j][i] = temp[j];
         }
     }
@@ -68,7 +75,7 @@ int main(int argc, char **argv) {
     char c;
     int i = 1;
     while ((c = fgetc(file)) != EOF && c != '\n') {
-        if (i % 16 == 0) {
+        if (i % KEY_BITS == 0) {
             printf("\n");
         }
         putchar(c);
@@ -76,8 +83,9 @@ int main(int argc, char **argv) {
     }
 
     fclose(file);
+    free(path);
     
-    int msg[4][4] = {
+    int msg[N_ROWS][N_COLS] = {
         {0, 4, 8, 12},
         {1, 5, 9, 13},
         {2, 6, 10, 14},
